@@ -50,6 +50,7 @@
 }
 
 @property (nonatomic, assign, readwrite) id <ReaderMainPagebarDelegate> delegate;
+@property (nonatomic, retain) ReaderDocument *document;
 
 - (id)initWithFrame:(CGRect)frame document:(ReaderDocument *)object;
 

@@ -45,11 +45,16 @@
 @synthesize document = _document;
 @synthesize delegate = _delegate;
 @synthesize currentPage = _currentPage;
+@synthesize pageBar = _pageBar;
+@synthesize togglePageBar = _togglePageBar;
 
 - (void)setDocument:(ReaderDocument *)document
 {
 	[_document release];
 	_document = [document retain];
+	if (_pageBar) {
+		_pageBar.document = document;
+	}
 	if (_document) {
 		[self loadDocument];
 	}
@@ -58,6 +63,20 @@
 - (void)setCurrentPage:(NSInteger)currentPage
 {
     [self showDocumentPage:currentPage];
+}
+
+- (void)setPageBar:(ReaderMainPagebar *)pageBar
+{
+	if (_pageBar) {
+		if (_pageBar.delegate == self) {
+			_pageBar.delegate = nil;
+		}
+	}
+	[_pageBar release];
+	_pageBar = [pageBar retain];
+	if (_pageBar.delegate == nil) {
+		_pageBar.delegate = self;
+	}
 }
 
 #pragma mark - Utility Methods
@@ -203,6 +222,9 @@
 		if (_delegate && [_delegate respondsToSelector:@selector(readerDocumentView:didChangeToPage:)]) {
 			[_delegate readerDocumentView:self didChangeToPage:page];
 		}
+		if (_pageBar) {
+			[_pageBar updatePagebar];
+		}
 		_currentPage = page; // Track current page number
 	}
 }
@@ -297,9 +319,11 @@
 	_scrollView.tag = 0; // Clear page number tag
 }
 
+#pragma mark - ReaderContentViewDelegate methods
+
 - (void)scrollViewTouchesBegan:(UIScrollView *)scrollView touches:(NSSet *)touches
 {
-	if (_delegate && [_delegate respondsToSelector:@selector(readerDocumentView:didTapForToolbar:)]) {
+	if (_delegate || (_pageBar && _togglePageBar)) {
 		if (touches.count == 1) // Single touches only
 		{
 			UITouch *touch = [touches anyObject]; // Touch info
@@ -310,11 +334,26 @@
 
 			if (CGRectContainsPoint(areaRect, point) == false) return;
 		}
-
-		[_delegate readerDocumentView:self didTapForToolbar:YES];
+		if (_delegate && [_delegate respondsToSelector:@selector(readerDocumentView:didTapForToolbar:)]) {
+			[_delegate readerDocumentView:self didTapForToolbar:YES];
+		}
+		if (_pageBar) {
+			[_pageBar hidePagebar];
+		}
 
 		self.lastHideTime = [NSDate date];
 	}
+}
+
+#pragma mark ReaderMainPagebarDelegate methods
+
+- (void)pagebar:(ReaderMainPagebar *)pagebar gotoPage:(NSInteger)page
+{
+#ifdef DEBUGX
+	NSLog(@"%s", __FUNCTION__);
+#endif
+	
+	[self showDocumentPage:page]; // Show the page
 }
 
 #pragma mark - UIGestureRecognizerDelegate
@@ -408,9 +447,14 @@
 			}
 			else // Nothing active tapped in the target content view
 			{
-				if (_delegate && [_delegate respondsToSelector:@selector(readerDocumentView:didTapForToolbar:)]) {
+				if (_delegate || (_pageBar && _togglePageBar)) {
 					if ([_lastHideTime timeIntervalSinceNow] < -0.75) {
-						[_delegate readerDocumentView:self didTapForToolbar:NO];
+						if (_delegate && [_delegate respondsToSelector:@selector(readerDocumentView:didTapForToolbar:)]) {
+							[_delegate readerDocumentView:self didTapForToolbar:NO];
+						}
+						if (_pageBar) {
+							[_pageBar showPagebar];
+						}
 					}
 				}
 			}
@@ -504,6 +548,7 @@
 
 - (void)standardInit
 {
+	self.togglePageBar = YES;
 	self.lastHideTime = [NSDate date];
 	self.tapAreaSize = 48.0f;
 	self.backgroundColor = [UIColor scrollViewTexturedBackgroundColor];
@@ -565,6 +610,7 @@
 	[_lastHideTime release];
 	[_contentViews release];
 	[_document release];
+	[_pageBar release];
 	[super dealloc];
 }
 

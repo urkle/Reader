@@ -18,6 +18,13 @@
 
 #import <QuartzCore/QuartzCore.h>
 
+@interface ReaderMainPagebar()
+
+- (void)updatePageNumberText:(NSInteger)page;
+- (void)clearThumbViews;
+
+@end
+
 @implementation ReaderMainPagebar
 
 #pragma mark Constants
@@ -36,6 +43,19 @@
 #pragma mark Properties
 
 @synthesize delegate;
+@synthesize document;
+
+- (void)setDocument:(ReaderDocument *)newdocument
+{
+	[document release];
+	document = [newdocument retain];
+	if (document) {
+		[self clearThumbViews];
+		pageThumbView.tag = 0;
+		[self updatePageNumberText:[document.pageNumber integerValue]];
+		[self setNeedsLayout];
+	}
+}
 
 #pragma mark ReaderMainPagebar class methods
 
@@ -123,6 +143,75 @@
 	}
 }
 
+- (void)standardInit
+{
+	self.autoresizesSubviews = YES;
+	self.userInteractionEnabled = YES;
+	self.contentMode = UIViewContentModeRedraw;
+	self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
+	self.backgroundColor = [UIColor clearColor];
+	
+	NSAssert(self.bounds.size.height >= 48, @"Height must be a minimum of 48");
+
+	CAGradientLayer *layer = (CAGradientLayer *)self.layer;
+	CGColorRef liteColor = [UIColor colorWithWhite:0.82f alpha:0.8f].CGColor;
+	CGColorRef darkColor = [UIColor colorWithWhite:0.32f alpha:0.8f].CGColor;
+	layer.colors = [NSArray arrayWithObjects:(id)liteColor, (id)darkColor, nil];
+	
+	CGRect shadowRect = self.bounds; shadowRect.size.height = 4.0f; shadowRect.origin.y -= shadowRect.size.height;
+	
+	ReaderPagebarShadow *shadowView = [[ReaderPagebarShadow alloc] initWithFrame:shadowRect];
+	
+	[self addSubview:shadowView]; [shadowView release]; // Add the shadow to the view
+	
+	CGFloat numberY = (0.0f - (PAGE_NUMBER_HEIGHT + PAGE_NUMBER_SPACE));
+	CGFloat numberX = ((self.bounds.size.width - PAGE_NUMBER_WIDTH) / 2.0f);
+	CGRect numberRect = CGRectMake(numberX, numberY, PAGE_NUMBER_WIDTH, PAGE_NUMBER_HEIGHT);
+	
+	pageNumberView = [[UIView alloc] initWithFrame:numberRect]; // Page numbers view
+	
+	pageNumberView.autoresizesSubviews = NO;
+	pageNumberView.userInteractionEnabled = NO;
+	pageNumberView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
+	pageNumberView.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.4f];
+	
+	pageNumberView.layer.cornerRadius = 4.0f;
+	pageNumberView.layer.shadowOffset = CGSizeMake(0.0f, 0.0f);
+	pageNumberView.layer.shadowColor = [UIColor colorWithWhite:0.0f alpha:0.6f].CGColor;
+	pageNumberView.layer.shadowPath = [UIBezierPath bezierPathWithRect:pageNumberView.bounds].CGPath;
+	pageNumberView.layer.shadowRadius = 2.0f; pageNumberView.layer.shadowOpacity = 1.0f;
+	
+	CGRect textRect = CGRectInset(pageNumberView.bounds, 4.0f, 2.0f); // Inset the text a bit
+	
+	pageNumberLabel = [[UILabel alloc] initWithFrame:textRect]; // Page numbers label
+	
+	pageNumberLabel.autoresizesSubviews = NO;
+	pageNumberLabel.autoresizingMask = UIViewAutoresizingNone;
+	pageNumberLabel.textAlignment = UITextAlignmentCenter;
+	pageNumberLabel.backgroundColor = [UIColor clearColor];
+	pageNumberLabel.textColor = [UIColor whiteColor];
+	pageNumberLabel.font = [UIFont systemFontOfSize:16.0f];
+	pageNumberLabel.shadowOffset = CGSizeMake(0.0f, 1.0f);
+	pageNumberLabel.shadowColor = [UIColor blackColor];
+	pageNumberLabel.adjustsFontSizeToFitWidth = YES;
+	pageNumberLabel.minimumFontSize = 12.0f;
+	
+	[pageNumberView addSubview:pageNumberLabel]; // Add label view
+	
+	[self addSubview:pageNumberView]; // Add page numbers display view
+	
+	trackControl = [[ReaderTrackControl alloc] initWithFrame:self.bounds]; // Track control view
+	
+	[trackControl addTarget:self action:@selector(trackViewTouchDown:) forControlEvents:UIControlEventTouchDown];
+	[trackControl addTarget:self action:@selector(trackViewValueChanged:) forControlEvents:UIControlEventValueChanged];
+	[trackControl addTarget:self action:@selector(trackViewTouchUp:) forControlEvents:UIControlEventTouchUpOutside];
+	[trackControl addTarget:self action:@selector(trackViewTouchUp:) forControlEvents:UIControlEventTouchUpInside];
+	
+	[self addSubview:trackControl]; // Add the track control and thumbs view
+	
+	miniThumbViews = [NSMutableDictionary new]; // Small thumbs
+}
+
 - (id)initWithFrame:(CGRect)frame document:(ReaderDocument *)object
 {
 #ifdef DEBUGX
@@ -131,76 +220,19 @@
 
 	if ((self = [super initWithFrame:frame]))
 	{
-		self.autoresizesSubviews = YES;
-		self.userInteractionEnabled = YES;
-		self.contentMode = UIViewContentModeRedraw;
-		self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
-		self.backgroundColor = [UIColor clearColor];
+		[self standardInit];
 
-		CAGradientLayer *layer = (CAGradientLayer *)self.layer;
-		CGColorRef liteColor = [UIColor colorWithWhite:0.82f alpha:0.8f].CGColor;
-		CGColorRef darkColor = [UIColor colorWithWhite:0.32f alpha:0.8f].CGColor;
-		layer.colors = [NSArray arrayWithObjects:(id)liteColor, (id)darkColor, nil];
-
-		CGRect shadowRect = self.bounds; shadowRect.size.height = 4.0f; shadowRect.origin.y -= shadowRect.size.height;
-
-		ReaderPagebarShadow *shadowView = [[ReaderPagebarShadow alloc] initWithFrame:shadowRect];
-
-		[self addSubview:shadowView]; [shadowView release]; // Add the shadow to the view
-
-		CGFloat numberY = (0.0f - (PAGE_NUMBER_HEIGHT + PAGE_NUMBER_SPACE));
-		CGFloat numberX = ((self.bounds.size.width - PAGE_NUMBER_WIDTH) / 2.0f);
-		CGRect numberRect = CGRectMake(numberX, numberY, PAGE_NUMBER_WIDTH, PAGE_NUMBER_HEIGHT);
-
-		pageNumberView = [[UIView alloc] initWithFrame:numberRect]; // Page numbers view
-
-		pageNumberView.autoresizesSubviews = NO;
-		pageNumberView.userInteractionEnabled = NO;
-		pageNumberView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
-		pageNumberView.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.4f];
-
-		pageNumberView.layer.cornerRadius = 4.0f;
-		pageNumberView.layer.shadowOffset = CGSizeMake(0.0f, 0.0f);
-		pageNumberView.layer.shadowColor = [UIColor colorWithWhite:0.0f alpha:0.6f].CGColor;
-		pageNumberView.layer.shadowPath = [UIBezierPath bezierPathWithRect:pageNumberView.bounds].CGPath;
-		pageNumberView.layer.shadowRadius = 2.0f; pageNumberView.layer.shadowOpacity = 1.0f;
-
-		CGRect textRect = CGRectInset(pageNumberView.bounds, 4.0f, 2.0f); // Inset the text a bit
-
-		pageNumberLabel = [[UILabel alloc] initWithFrame:textRect]; // Page numbers label
-
-		pageNumberLabel.autoresizesSubviews = NO;
-		pageNumberLabel.autoresizingMask = UIViewAutoresizingNone;
-		pageNumberLabel.textAlignment = UITextAlignmentCenter;
-		pageNumberLabel.backgroundColor = [UIColor clearColor];
-		pageNumberLabel.textColor = [UIColor whiteColor];
-		pageNumberLabel.font = [UIFont systemFontOfSize:16.0f];
-		pageNumberLabel.shadowOffset = CGSizeMake(0.0f, 1.0f);
-		pageNumberLabel.shadowColor = [UIColor blackColor];
-		pageNumberLabel.adjustsFontSizeToFitWidth = YES;
-		pageNumberLabel.minimumFontSize = 12.0f;
-
-		[pageNumberView addSubview:pageNumberLabel]; // Add label view
-
-		[self addSubview:pageNumberView]; // Add page numbers display view
-
-		trackControl = [[ReaderTrackControl alloc] initWithFrame:self.bounds]; // Track control view
-
-		[trackControl addTarget:self action:@selector(trackViewTouchDown:) forControlEvents:UIControlEventTouchDown];
-		[trackControl addTarget:self action:@selector(trackViewValueChanged:) forControlEvents:UIControlEventValueChanged];
-		[trackControl addTarget:self action:@selector(trackViewTouchUp:) forControlEvents:UIControlEventTouchUpOutside];
-		[trackControl addTarget:self action:@selector(trackViewTouchUp:) forControlEvents:UIControlEventTouchUpInside];
-
-		[self addSubview:trackControl]; // Add the track control and thumbs view
-
-		document = [object retain]; // Retain the document object for our use
-
-		[self updatePageNumberText:[document.pageNumber integerValue]];
-
-		miniThumbViews = [NSMutableDictionary new]; // Small thumbs
+		self.document = object; // Retain the document object for our use
 	}
 
 	return self;
+}
+
+- (void)awakeFromNib
+{
+	[super awakeFromNib];
+	
+	[self standardInit];
 }
 
 - (void)removeFromSuperview
@@ -244,6 +276,7 @@
 #ifdef DEBUGX
 	NSLog(@"%s", __FUNCTION__);
 #endif
+	if (!document) return;
 
 	CGRect controlRect = CGRectInset(self.bounds, 4.0f, 0.0f);
 
@@ -339,6 +372,14 @@
 			ReaderPagebarThumb *thumb = object; thumb.hidden = YES;
 		}
 	];
+}
+
+- (void)clearThumbViews
+{	
+	[miniThumbViews enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+		[obj removeFromSuperview];
+	}];
+	[miniThumbViews removeAllObjects];
 }
 
 - (void)updatePagebarViews
