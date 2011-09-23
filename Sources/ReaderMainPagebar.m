@@ -191,7 +191,7 @@
 	self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
 	self.backgroundColor = [UIColor clearColor];
 	
-	NSAssert(self.bounds.size.height >= 48, @"Height must be a minimum of 48");
+	NSAssert(self.bounds.size.height >= 44, @"Height must be a minimum of 48");
 
 	_translucent = NO;
 	self.translucent = YES;
