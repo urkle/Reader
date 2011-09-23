@@ -207,7 +207,9 @@
 			}
 			else // Cupertino, we have a problem with the document
 			{
-				NSAssert(NO, @"CGPDFDocumentRef == NULL");
+				NSLog(@"Could not open file: %@", fullFilePath);
+				return nil;
+//				NSAssert(NO, @"CGPDFDocumentRef == NULL");
 			}
 
 			NSFileManager *fileManager = [NSFileManager new]; // File manager
