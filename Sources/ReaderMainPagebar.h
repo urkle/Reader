@@ -20,6 +20,7 @@
 @class ReaderTrackControl;
 @class ReaderPagebarThumb;
 @class ReaderDocument;
+@class ReaderPagebarShadow;
 
 @protocol ReaderMainPagebarDelegate <NSObject>
 
@@ -41,6 +42,8 @@
 
 	ReaderPagebarThumb *pageThumbView;
 
+    ReaderPagebarShadow *_shadowView;
+
 	UILabel *pageNumberLabel;
 
 	UIView *pageNumberView;
@@ -51,6 +54,8 @@
 
 @property (nonatomic, assign, readwrite) id <ReaderMainPagebarDelegate> delegate;
 @property (nonatomic, retain) ReaderDocument *document;
+@property (nonatomic, assign) BOOL shadow;
+@property (nonatomic, assign,getter=isTranslucent) BOOL translucent;
 
 - (id)initWithFrame:(CGRect)frame document:(ReaderDocument *)object;
 

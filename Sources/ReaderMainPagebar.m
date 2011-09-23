@@ -44,6 +44,8 @@
 
 @synthesize delegate;
 @synthesize document;
+@synthesize shadow = _shadow;
+@synthesize translucent = _translucent;
 
 - (void)setDocument:(ReaderDocument *)newdocument
 {
@@ -54,6 +56,44 @@
 		pageThumbView.tag = 0;
 		[self updatePageNumberText:[document.pageNumber integerValue]];
 		[self setNeedsLayout];
+	}
+}
+
+- (void)setTranslucent:(BOOL)translucent
+{
+	if (_translucent != translucent) {
+		_translucent = translucent;
+		CAGradientLayer *layer = (CAGradientLayer *)self.layer;
+		CGColorRef liteColor, darkColor;
+		if (_translucent) {
+			liteColor = [UIColor colorWithWhite:0.82f alpha:0.8f].CGColor;
+			darkColor = [UIColor colorWithWhite:0.32f alpha:0.8f].CGColor;
+		} else {
+			liteColor = [UIColor colorWithWhite:0.82f alpha:1].CGColor;
+			darkColor = [UIColor colorWithWhite:0.32f alpha:1].CGColor;
+		}
+		layer.colors = [NSArray arrayWithObjects:(id)liteColor, (id)darkColor, nil];
+	}
+}
+
+- (void)setShadow:(BOOL)shadow
+{
+	if (_shadow != shadow) {
+		_shadow = shadow;
+		if (_shadow) {
+			if (!_shadowView) {
+				CGRect shadowRect = self.bounds;
+				shadowRect.size.height = 4.0f;
+				shadowRect.origin.y -= shadowRect.size.height;
+
+				_shadowView = [[ReaderPagebarShadow alloc] initWithFrame:shadowRect];
+			}
+			[self addSubview:_shadowView];
+		} else {
+			[_shadowView removeFromSuperview];
+			[_shadowView release];
+			_shadowView = nil;
+		}
 	}
 }
 
@@ -153,16 +193,10 @@
 	
 	NSAssert(self.bounds.size.height >= 48, @"Height must be a minimum of 48");
 
-	CAGradientLayer *layer = (CAGradientLayer *)self.layer;
-	CGColorRef liteColor = [UIColor colorWithWhite:0.82f alpha:0.8f].CGColor;
-	CGColorRef darkColor = [UIColor colorWithWhite:0.32f alpha:0.8f].CGColor;
-	layer.colors = [NSArray arrayWithObjects:(id)liteColor, (id)darkColor, nil];
-	
-	CGRect shadowRect = self.bounds; shadowRect.size.height = 4.0f; shadowRect.origin.y -= shadowRect.size.height;
-	
-	ReaderPagebarShadow *shadowView = [[ReaderPagebarShadow alloc] initWithFrame:shadowRect];
-	
-	[self addSubview:shadowView]; [shadowView release]; // Add the shadow to the view
+	_translucent = NO;
+	self.translucent = YES;
+	_shadow = NO;
+	self.shadow = YES;
 	
 	CGFloat numberY = (0.0f - (PAGE_NUMBER_HEIGHT + PAGE_NUMBER_SPACE));
 	CGFloat numberX = ((self.bounds.size.width - PAGE_NUMBER_WIDTH) / 2.0f);
