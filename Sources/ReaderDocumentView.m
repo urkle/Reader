@@ -50,6 +50,8 @@
 
 - (void)setDocument:(ReaderDocument *)document
 {
+	// Save the state of the current document
+	[_document saveReaderDocument];
 	[_document release];
 	_document = [document retain];
 	if (_document) {
@@ -349,7 +351,7 @@
 #ifdef DEBUGX
 	NSLog(@"%s", __FUNCTION__);
 #endif
-	
+
 	[self showDocumentPage:page]; // Show the page
 }
 
@@ -581,6 +583,10 @@
 	[self addGestureRecognizer:doubleTapTwo]; [doubleTapTwo release];
 
 	_contentViews = [NSMutableDictionary new];
+
+	NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
+	[notificationCenter addObserver:self selector:@selector(saveReaderDocument:) name:UIApplicationWillTerminateNotification object:nil];
+	[notificationCenter addObserver:self selector:@selector(saveReaderDocument:) name:UIApplicationWillResignActiveNotification object:nil];
 }
 
 - (id)initWithFrame:(CGRect)frame
@@ -600,6 +606,7 @@
 
 - (void)dealloc
 {
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	[_scrollView release];
 	[_lastHideTime release];
 	[_contentViews release];
@@ -608,4 +615,12 @@
 	[super dealloc];
 }
 
+- (void)saveReaderDocument:(NSNotification *)notification
+{
+#ifdef DEBUGX
+	NSLog(@"%s", __FUNCTION__);
+#endif
+
+	[_document saveReaderDocument]; // Save any ReaderDocument object changes
+}
 @end
