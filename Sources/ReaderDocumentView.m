@@ -65,7 +65,7 @@
     [self showDocumentPage:currentPage];
 }
 
-- (void)setPageBar:(ReaderMainPagebar *)pageBar
+- (void)setPageBar:(ReaderPagebarView *)pageBar
 {
 	if (_pageBar) {
 		if (_pageBar.delegate == self) {
@@ -337,9 +337,6 @@
 		if (_delegate && [_delegate respondsToSelector:@selector(readerDocumentView:didTapForToolbar:)]) {
 			[_delegate readerDocumentView:self didTapForToolbar:YES];
 		}
-		if (_pageBar) {
-			[_pageBar hidePagebar];
-		}
 
 		self.lastHideTime = [NSDate date];
 	}
@@ -347,7 +344,7 @@
 
 #pragma mark ReaderMainPagebarDelegate methods
 
-- (void)pagebar:(ReaderMainPagebar *)pagebar gotoPage:(NSInteger)page
+- (void)pagebar:(ReaderPagebarView *)pagebar gotoPage:(NSInteger)page
 {
 #ifdef DEBUGX
 	NSLog(@"%s", __FUNCTION__);
@@ -451,9 +448,6 @@
 					if ([_lastHideTime timeIntervalSinceNow] < -0.75) {
 						if (_delegate && [_delegate respondsToSelector:@selector(readerDocumentView:didTapForToolbar:)]) {
 							[_delegate readerDocumentView:self didTapForToolbar:NO];
-						}
-						if (_pageBar) {
-							[_pageBar showPagebar];
 						}
 					}
 				}

@@ -10,18 +10,18 @@
 
 #include "ReaderDocument.h"
 #include "ReaderContentView.h"
-#include "ReaderMainPagebar.h"
+#include "ReaderPagebarView.h"
 
 @protocol ReaderDocumentViewDelegate;
 
-@interface ReaderDocumentView : UIView <UIScrollViewDelegate,UIGestureRecognizerDelegate,ReaderContentViewDelegate,ReaderMainPagebarDelegate> {
+@interface ReaderDocumentView : UIView <UIScrollViewDelegate,UIGestureRecognizerDelegate,ReaderContentViewDelegate,ReaderPagebarViewDelegate> {
 
 }
 
 // The actual document to render.  Will restore to the stored "last viewed" page
 @property (nonatomic, retain) ReaderDocument *document;
 // This is the associated pagebar control to manage
-@property (nonatomic, retain) IBOutlet ReaderMainPagebar *pageBar;
+@property (nonatomic, retain) IBOutlet ReaderPagebarView *pageBar;
 // Specify whether to show and hide the associated pageBar
 @property (nonatomic, assign) BOOL togglePageBar;
 // The size of the "tap area" .. default is 48
