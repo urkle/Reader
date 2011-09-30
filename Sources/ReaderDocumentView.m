@@ -52,11 +52,11 @@
 {
 	[_document release];
 	_document = [document retain];
-	if (_pageBar) {
-		_pageBar.document = document;
-	}
 	if (_document) {
 		[self loadDocument];
+	}
+	if (_pageBar) {
+		_pageBar.document = document;
 	}
 }
 

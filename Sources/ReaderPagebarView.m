@@ -87,27 +87,25 @@
 
 	NSInteger pages = [document.pageCount integerValue];
 
-	if (pages > 1) // Only update frame if more than one page
+	// Since we are re-using the pagebar ALWAYS adjust the size even for 1 page documents
+	CGFloat controlWidth = trackControl.bounds.size.width;
+
+	CGFloat useableWidth = (controlWidth - THUMB_LARGE_WIDTH);
+
+	CGFloat stride = (useableWidth / (pages - 1)); // Page stride
+
+	NSInteger X = (stride * (page - 1)); CGFloat pageThumbX = X;
+
+	CGRect pageThumbRect = pageThumbView.frame; // Current frame
+
+	if (pageThumbX != pageThumbRect.origin.x) // Only if different
 	{
-		CGFloat controlWidth = trackControl.bounds.size.width;
+		pageThumbRect.origin.x = pageThumbX; // The new X position
 
-		CGFloat useableWidth = (controlWidth - THUMB_LARGE_WIDTH);
-
-		CGFloat stride = (useableWidth / (pages - 1)); // Page stride
-
-		NSInteger X = (stride * (page - 1)); CGFloat pageThumbX = X;
-
-		CGRect pageThumbRect = pageThumbView.frame; // Current frame
-
-		if (pageThumbX != pageThumbRect.origin.x) // Only if different
-		{
-			pageThumbRect.origin.x = pageThumbX; // The new X position
-
-			pageThumbView.frame = pageThumbRect; // Update the frame
-		}
+		pageThumbView.frame = pageThumbRect; // Update the frame
 	}
 
-	if (page != pageThumbView.tag) // Only if page number changed
+	if (pageThumbView && page != pageThumbView.tag) // Only if page number changed
 	{
 		pageThumbView.tag = page; [pageThumbView reuse]; // Reuse the thumb view
 
