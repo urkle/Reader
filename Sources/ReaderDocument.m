@@ -16,6 +16,8 @@
 #import "CGPDFDocument.h"
 #import <fcntl.h>
 
+static NSString *documentsArchivePath = nil;
+
 @implementation ReaderDocument
 
 #pragma mark Properties
@@ -52,15 +54,23 @@
 	return unique;
 }
 
-+ (NSString *)documentsPath
++ (void)setDocumentsArchivePath:(NSString *)archivePath
+{
+    [documentsArchivePath release];
+    documentsArchivePath = [archivePath copy];
+}
+
++ (NSString *)documentsArchivePath
 {
 #ifdef DEBUGX
 	NSLog(@"%s", __FUNCTION__);
 #endif
 
-	NSArray *documentsPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-
-	return [documentsPaths objectAtIndex:0]; // Path to the application's "Documents" directory
+    if (!documentsArchivePath) {
+        NSArray *documentsPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        documentsArchivePath = [[documentsPaths objectAtIndex:0] copy];  // Path to the application's "Documents" directory
+    }
+    return documentsArchivePath;
 }
 
 + (NSString *)applicationPath
@@ -99,7 +109,7 @@
 
 	assert(filename != nil); // Ensure that the archive file name is not nil
 
-	NSString *documentsPath = [ReaderDocument documentsPath]; // Application's "Documents" path
+	NSString *documentsPath = [ReaderDocument documentsArchivePath]; // Application's "Documents" path
 
 	NSString *archiveName = [[filename stringByDeletingPathExtension] stringByAppendingPathExtension:@"plist"];
 

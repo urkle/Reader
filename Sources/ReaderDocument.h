@@ -50,6 +50,10 @@
 @property (nonatomic, retain, readonly) NSString *password;
 @property (nonatomic, retain, readonly) NSURL *fileURL;
 
++ (void)setDocumentsArchivePath:(NSString *)archivePath;
++ (NSString *)documentsArchivePath;
++ (NSString *)archiveFilePath:(NSString *)filename;
+
 + (ReaderDocument *)unarchiveFromFileName:(NSString *)filename password:(NSString *)phrase;
 
 - (id)initWithFilePath:(NSString *)fullFilePath password:(NSString *)phrase;
