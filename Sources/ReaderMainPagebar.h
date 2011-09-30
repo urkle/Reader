@@ -15,47 +15,20 @@
 #import <UIKit/UIKit.h>
 
 #import "ReaderThumbView.h"
+#import "ReaderPagebarView.h"
 
-@class ReaderMainPagebar;
-@class ReaderTrackControl;
-@class ReaderPagebarThumb;
-@class ReaderDocument;
 @class ReaderPagebarShadow;
-
-@protocol ReaderMainPagebarDelegate <NSObject>
-
-@required // Delegate protocols
-
-- (void)pagebar:(ReaderMainPagebar *)pagebar gotoPage:(NSInteger)page;
-
-@end
 
 @interface ReaderMainPagebar : UIView
 {
 @private // Instance variables
 
-	ReaderDocument *document;
-
-	ReaderTrackControl *trackControl;
-
-	NSMutableDictionary *miniThumbViews;
-
-	ReaderPagebarThumb *pageThumbView;
-
     ReaderPagebarShadow *_shadowView;
-
-	UILabel *pageNumberLabel;
-
-	UIView *pageNumberView;
-
-	NSTimer *enableTimer;
-	NSTimer *trackTimer;
+    ReaderPagebarView *_pagebar;
 }
 
-@property (nonatomic, assign, readwrite) id <ReaderMainPagebarDelegate> delegate;
 @property (nonatomic, retain) ReaderDocument *document;
-@property (nonatomic, assign) BOOL shadow;
-@property (nonatomic, assign,getter=isTranslucent) BOOL translucent;
+@property (nonatomic, readonly) ReaderPagebarView *pagebar;
 
 - (id)initWithFrame:(CGRect)frame document:(ReaderDocument *)object;
 
@@ -63,38 +36,6 @@
 
 - (void)hidePagebar;
 - (void)showPagebar;
-
-@end
-
-#pragma mark -
-
-//
-//	ReaderTrackControl class interface
-//
-
-@interface ReaderTrackControl : UIControl
-{
-@private // Instance variables
-
-	CGFloat _value;
-}
-
-@property (nonatomic, assign, readonly) CGFloat value;
-
-@end
-
-#pragma mark -
-
-//
-//	ReaderPagebarThumb class interface
-//
-
-@interface ReaderPagebarThumb : ReaderThumbView
-{
-@private // Instance variables
-}
-
-- (id)initWithFrame:(CGRect)frame small:(BOOL)small;
 
 @end
 

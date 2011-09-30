@@ -58,6 +58,7 @@
 		45AB7324141FC0B1003524C3 /* ThumbsMainToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = 45AB7310141FC0B1003524C3 /* ThumbsMainToolbar.m */; };
 		45AB7325141FC0B1003524C3 /* ThumbsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 45AB7312141FC0B1003524C3 /* ThumbsViewController.m */; };
 		45BD5AFE13AE721A00D6FE97 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 45BD5AFD13AE721A00D6FE97 /* MessageUI.framework */; };
+		DB69B46E1435717700C69150 /* ReaderPagebarView.m in Sources */ = {isa = PBXBuildFile; fileRef = DB69B46C1435717700C69150 /* ReaderPagebarView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -138,6 +139,10 @@
 		45AB7312141FC0B1003524C3 /* ThumbsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ThumbsViewController.m; path = Sources/ThumbsViewController.m; sourceTree = "<group>"; };
 		45BD5AFD13AE721A00D6FE97 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		8D1107310486CEB800E47090 /* Reader-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Reader-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		DB69B4691435717700C69150 /* ReaderDocumentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ReaderDocumentView.h; path = Sources/ReaderDocumentView.h; sourceTree = "<group>"; };
+		DB69B46A1435717700C69150 /* ReaderDocumentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ReaderDocumentView.m; path = Sources/ReaderDocumentView.m; sourceTree = "<group>"; };
+		DB69B46B1435717700C69150 /* ReaderPagebarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ReaderPagebarView.h; path = Sources/ReaderPagebarView.h; sourceTree = "<group>"; };
+		DB69B46C1435717700C69150 /* ReaderPagebarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ReaderPagebarView.m; path = Sources/ReaderPagebarView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -254,6 +259,10 @@
 		45BD5A7C13AE6C3B00D6FE97 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				DB69B4691435717700C69150 /* ReaderDocumentView.h */,
+				DB69B46A1435717700C69150 /* ReaderDocumentView.m */,
+				DB69B46B1435717700C69150 /* ReaderPagebarView.h */,
+				DB69B46C1435717700C69150 /* ReaderPagebarView.m */,
 				45AB72EF141FC0B1003524C3 /* ReaderConstants.h */,
 				45AB72F0141FC0B1003524C3 /* ReaderConstants.m */,
 				45AB72F7141FC0B1003524C3 /* ReaderDocument.h */,
@@ -409,6 +418,7 @@
 				45AB7325141FC0B1003524C3 /* ThumbsViewController.m in Sources */,
 				4555C74C14211A00005F448D /* ReaderBookDelegate.m in Sources */,
 				455C7891142687CA0053D73B /* UIXToolbarView.m in Sources */,
+				DB69B46E1435717700C69150 /* ReaderPagebarView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

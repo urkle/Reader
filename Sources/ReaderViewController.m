@@ -348,7 +348,7 @@
 
 	mainPagebar = [[ReaderMainPagebar alloc] initWithFrame:pagebarRect document:document]; // At bottom
 
-	mainPagebar.delegate = self;
+	mainPagebar.pagebar.delegate = self;
 
 	[self.view addSubview:mainPagebar];
 
