@@ -54,9 +54,7 @@
 	[_document saveReaderDocument];
 	[_document release];
 	_document = [document retain];
-	if (_document) {
-		[self loadDocument];
-	}
+	[self loadDocument];
 	if (_pageBar) {
 		_pageBar.document = document;
 	}

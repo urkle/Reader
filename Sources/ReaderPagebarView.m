@@ -52,14 +52,13 @@
 {
 	[document release];
 	document = [newdocument retain];
-	if (document) {
-		[self clearThumbViews];
-		pageThumbView.tag = 0;
-		pageNumberLabel.tag = 0;
-		trackControl.tag = 0;
-		[self updatePageNumberText:[document.pageNumber integerValue]];
-		[self setNeedsLayout];
-	}
+
+	[self clearThumbViews];
+	pageThumbView.tag = 0;
+	pageNumberLabel.tag = 0;
+	trackControl.tag = 0;
+	[self updatePageNumberText:[document.pageNumber integerValue]];
+	[self setNeedsLayout];
 }
 
 - (void)setFadePageNumber:(BOOL)fadePageNumber
