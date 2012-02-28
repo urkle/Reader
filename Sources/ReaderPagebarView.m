@@ -234,6 +234,7 @@
 	[trackControl addTarget:self action:@selector(trackViewValueChanged:) forControlEvents:UIControlEventValueChanged];
 	[trackControl addTarget:self action:@selector(trackViewTouchUp:) forControlEvents:UIControlEventTouchUpOutside];
 	[trackControl addTarget:self action:@selector(trackViewTouchUp:) forControlEvents:UIControlEventTouchUpInside];
+	[trackControl addTarget:self action:@selector(trackViewDoubleTap:event:) forControlEvents:UIControlEventTouchDownRepeat];
 
 	[self addSubview:trackControl]; // Add the track control and thumbs view
 
@@ -603,6 +604,20 @@
 	}
 
 	trackView.tag = 0; // Reset page tracking
+}
+
+- (void)trackViewDoubleTap:(ReaderTrackControlView *)trackView event:(UIEvent *)event
+{
+	UITouch *touch = [[event allTouches] anyObject];
+	if (touch.tapCount == 2)
+	{
+#ifdef DEBUGX
+		NSLog(@"%s - %s", __FUNCTION__, "Double Tap Occured")
+#endif
+		if ([delegate respondsToSelector:@selector(pagebarDidReceiveDoubleTap:)]) {
+			[delegate pagebarDidReceiveDoubleTap:self];
+		}
+	}
 }
 
 @end

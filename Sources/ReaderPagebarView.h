@@ -27,6 +27,10 @@
 
 - (void)pagebar:(ReaderPagebarView *)pagebar gotoPage:(NSInteger)page;
 
+@optional
+
+- (void)pagebarDidReceiveDoubleTap:(ReaderPagebarView *)pagebar;
+
 @end
 
 @interface ReaderPagebarView : UIView
