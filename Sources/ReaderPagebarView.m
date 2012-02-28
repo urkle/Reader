@@ -154,6 +154,13 @@
 #ifdef DEBUGX
 	NSLog(@"%s", __FUNCTION__);
 #endif
+	NSInteger pages = [document.pageCount integerValue]; // Total pages
+
+	if (pages == 0) {
+		// If there are no pages builds bail as we don't need to display the page # text
+		return;
+	}
+
 	if (_fadePageNumber) {
 		if (pageNumberView.hidden) {
 			// if it's hidden display it
@@ -167,8 +174,6 @@
 	}
 	if (page != pageNumberLabel.tag) // Only if page number changed
 	{
-		NSInteger pages = [document.pageCount integerValue]; // Total pages
-
 		NSString *format = NSLocalizedString(@"%d of %d", @"format"); // Format
 
 		NSString *number = [NSString stringWithFormat:format, page, pages]; // Text
