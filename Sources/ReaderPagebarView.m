@@ -54,7 +54,9 @@
 	document = [newdocument retain];
 
 	[self clearThumbViews];
-	pageThumbView.tag = 0;
+	[pageThumbView removeFromSuperview];
+	[pageThumbView release];
+	pageThumbView = nil;
 	pageNumberLabel.tag = 0;
 	trackControl.tag = 0;
 	[self updatePageNumberText:[document.pageNumber integerValue]];
