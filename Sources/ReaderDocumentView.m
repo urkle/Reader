@@ -70,7 +70,7 @@
 	if (_pageBar) {
 		if (_pageBar.delegate == self) {
 			_pageBar.delegate = nil;
-		}
+		}   
 	}
 	[_pageBar release];
 	_pageBar = [pageBar retain];
@@ -85,11 +85,14 @@
 {
 	// Rebuild cache
 	[ReaderThumbCache createThumbCacheWithGUID:_document.guid];
+	// Enumerate and release from parent
 	[_contentViews enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-		[_contentViews removeObjectForKey:key];
 		ReaderContentView *contentView = obj;
 		[contentView removeFromSuperview];
 	}];
+	// We have to remove them AFTER the enumeration not IN the enumeration
+	[_contentViews removeAllObjects];
+
 	_currentPage = 0;
 	[self showDocument:nil];
 }
